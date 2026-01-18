@@ -1,0 +1,318 @@
+/* Admin Portal Styles */
+:root {
+    --sidebar-width: 280px;
+    --sidebar-bg: #1e1e2d;
+    --sidebar-hover: #2b2b40;
+    --header-height: 70px;
+    --accent: #4361ee;
+    --accent-glow: rgba(67, 97, 238, 0.3);
+}
+
+.admin-body {
+    background-color: #f4f7fe;
+    margin: 0;
+    display: flex;
+}
+
+/* Sidebar Styling */
+.admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--sidebar-bg);
+    color: white;
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+.sidebar-header {
+    padding: 30px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: rgba(255,255,255,0.03);
+}
+
+.admin-logo i {
+    font-size: 1.8rem;
+    color: var(--accent);
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+
+.admin-logo h3 {
+    font-size: 1.25rem;
+    letter-spacing: 0.5px;
+    margin: 0;
+    font-weight: 700;
+}
+
+/* Navigation Links */
+.admin-nav {
+    list-style: none;
+    padding: 20px 15px;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.admin-nav-item {
+    margin-bottom: 8px;
+}
+
+.admin-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 20px;
+    color: #a2a3b7;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.admin-nav-link i {
+    font-size: 1.25rem;
+    width: 24px;
+    text-align: center;
+}
+
+.admin-nav-link:hover {
+    background: var(--sidebar-hover);
+    color: white;
+    transform: translateX(5px);
+}
+
+.admin-nav-link.active {
+    background: linear-gradient(90deg, var(--accent) 0%, #3a0ca3 100%);
+    color: white;
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+.admin-nav-link.active i {
+    color: white;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    padding: 20px;
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.system-status {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #6c7293;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.dot-online { background-color: #10b981; box-shadow: 0 0 5px #10b981; }
+
+/* Main Content Area */
+.admin-main {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: 100vh;
+}
+
+.admin-main.expanded {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Header Styling */
+.admin-header {
+    height: var(--header-height);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: var(--sidebar-width);
+    z-index: 999;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.admin-header.expanded {
+    left: 0;
+}
+
+.sidebar-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #f3f6f9;
+    border: none;
+    cursor: pointer;
+    color: #5e6278;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.sidebar-toggle:hover {
+    background: var(--accent);
+    color: white;
+}
+
+/* User Profile in Header */
+.admin-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 12px;
+    transition: background 0.2s;
+}
+
+.admin-info:hover {
+    background: #f3f6f9;
+}
+
+.admin-details {
+    text-align: right;
+}
+
+.admin-name {
+    display: block;
+    font-weight: 700;
+    color: #181c32;
+    font-size: 0.9rem;
+}
+
+.admin-role {
+    display: block;
+    font-size: 0.75rem;
+    color: #a1a5b7;
+    font-weight: 500;
+}
+
+.admin-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e1e9ff 0%, #c2d1ff 100%);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Page Content Container */
+.admin-content {
+    padding: calc(var(--header-height) + 30px) 30px 30px;
+}
+
+/* Professional Cards */
+.dashboard-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(82, 63, 105, 0.05);
+    border: 1px solid rgba(0,0,0,0.03);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.dashboard-card h3 {
+    font-size: 1.2rem;
+    color: #181c32;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Stats Widgets */
+.stat-widget {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+.stat-widget:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+}
+
+.stat-icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.bg-light-primary { background: #e1e9ff; color: #4361ee; }
+.bg-light-success { background: #c9f7f5; color: #1bc5bd; }
+.bg-light-warning { background: #fff4de; color: #ffa800; }
+.bg-light-danger { background: #ffe2e5; color: #f64e60; }
+
+.stat-info h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #181c32;
+}
+
+.stat-info p {
+    margin: 0;
+    color: #b5b5c3;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+    .admin-sidebar.active {
+        transform: translateX(0);
+    }
+    .admin-main {
+        margin-left: 0;
+        width: 100%;
+    }
+    .admin-header {
+        left: 0;
+    }
+}

@@ -4,14 +4,94 @@ $election_status = getElectionStatus($pdo);
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo SITE_NAME; ?></title>
+    <title><?php echo SITE_NAME; ?> - Secure Online Voting</title>
     <link rel="stylesheet" href="Assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-pill.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-pill.upcoming {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-pill.ended {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-pill i {
+            font-size: 8px;
+        }
+
+        .floating-card {
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid var(--gray-100);
+            z-index: 5;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .floating-card i {
+            width: 44px;
+            height: 44px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+    </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -23,9 +103,8 @@ $election_status = getElectionStatus($pdo);
             <div class="nav-links">
                 <a href="index.php" class="active">Home</a>
                 <a href="#about">About</a>
-                <a href="#positions">Positions</a>
-                <a href="results_public.php">Results</a>
-                <a href="login.php" class="btn-login">Login</a>
+                <a href="results_public.php">Live Results</a>
+                <a href="login.php" class="btn-login">Sign In</a>
                 <a href="register.php" class="btn-register">Register</a>
             </div>
             <div class="menu-toggle">
@@ -38,38 +117,35 @@ $election_status = getElectionStatus($pdo);
     <section class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1>Student Union Elections 2024</h1>
-                <p class="subtitle">Your Voice Matters! Cast your vote for the future leaders of our student community.</p>
-                
-                <div class="election-status">
-                    <div class="status-badge status-<?php echo $election_status['status']; ?>">
-                        <i class="fas fa-<?php echo $election_status['status'] == 'active' ? 'play-circle' : ($election_status['status'] == 'ended' ? 'stop-circle' : 'clock'); ?>"></i>
-                        <span><?php echo ucfirst($election_status['status']); ?></span>
-                    </div>
-                    <p class="status-message"><?php echo $election_status['message']; ?></p>
+                <div class="status-pill <?php echo $election_status['status']; ?>">
+                    <i class="fas fa-circle"></i>
+                    <?php echo ucfirst($election_status['status']); ?> Election
                 </div>
-                
+                <h1 style="color: white;">Empowering the Next Generation of Student Leaders</h1>
+                <p class="subtitle">Secure, transparent, and accessible voting system. Make your voice heard and shape
+                    the future of our student community today.</p>
+
                 <div class="hero-buttons">
                     <?php if ($election_status['status'] == 'active'): ?>
                         <a href="vote.php" class="btn btn-primary">
-                            <i class="fas fa-vote-yea"></i> Cast Your Vote Now
+                            Cast Your Ballot <i class="fas fa-arrow-right"></i>
                         </a>
                     <?php elseif ($election_status['status'] == 'upcoming'): ?>
-                        <a href="register.php" class="btn btn-secondary">
-                            <i class="fas fa-user-plus"></i> Register to Vote
+                        <a href="register.php" class="btn btn-primary">
+                            Get Registered <i class="fas fa-user-plus"></i>
                         </a>
                     <?php endif; ?>
                     <a href="results_public.php" class="btn btn-outline">
-                        <i class="fas fa-chart-bar"></i> View Results
+                        View Live Turnout <i class="fas fa-chart-line"></i>
                     </a>
                 </div>
-                
+
                 <div class="stats">
                     <div class="stat-item">
                         <i class="fas fa-users"></i>
                         <div>
                             <h3>1,500+</h3>
-                            <p>Registered Students</p>
+                            <p>Voters</p>
                         </div>
                     </div>
                     <div class="stat-item">
@@ -80,16 +156,24 @@ $election_status = getElectionStatus($pdo);
                         </div>
                     </div>
                     <div class="stat-item">
-                        <i class="fas fa-vote-yea"></i>
+                        <i class="fas fa-check-double"></i>
                         <div>
-                            <h3>6</h3>
-                            <p>Positions</p>
+                            <h3>100%</h3>
+                            <p>Secure</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="hero-image">
-                <img src="https://cdn.pixabay.com/photo/2016/11/29/01/34/ballot-1867092_1280.jpg" alt="Voting Illustration">
+                <img src="Assets/images/hero_vote.png"
+                    alt="Students Voting">
+                <div class="floating-card">
+                    <i class="fas fa-shield-check"></i>
+                    <div>
+                        <strong style="display: block; font-size: 1rem;">Verified Identity</strong>
+                        <p style="margin: 0; font-size: 0.875rem;">Powered by Student ID</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -97,35 +181,36 @@ $election_status = getElectionStatus($pdo);
     <!-- About Section -->
     <section id="about" class="about-section">
         <div class="container">
-            <h2 class="section-title">About The Election</h2>
+            <h2 class="section-title">Why Choose StudentVote?</h2>
             <div class="about-grid">
                 <div class="about-card">
                     <div class="icon">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-fingerprint"></i>
                     </div>
-                    <h3>Secure Voting</h3>
-                    <p>Military-grade encryption ensures your vote remains confidential and tamper-proof.</p>
+                    <h3>Biometric Security</h3>
+                    <p>Advanced security protocols ensure each student can only vote once per position.</p>
                 </div>
                 <div class="about-card">
                     <div class="icon">
-                        <i class="fas fa-user-check"></i>
+                        <i class="fas fa-eye"></i>
                     </div>
-                    <h3>Verified Voters</h3>
-                    <p>Only registered students with valid credentials can participate in the voting process.</p>
+                    <h3>Total Transparency</h3>
+                    <p>Every vote is counted accurately with real-time auditing capabilities for the committee.</p>
                 </div>
                 <div class="about-card">
                     <div class="icon">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-bolt"></i>
                     </div>
-                    <h3>Real-time Results</h3>
-                    <p>Watch live election results as votes are cast (visible after voting period ends).</p>
+                    <h3>Instant Tabulation</h3>
+                    <p>No more manual counting. Results are available seconds after the voting period ends.</p>
                 </div>
                 <div class="about-card">
                     <div class="icon">
-                        <i class="fas fa-mobile-alt"></i>
+                        <i class="fas fa-universal-access"></i>
                     </div>
-                    <h3>Mobile Friendly</h3>
-                    <p>Vote from any device - desktop, tablet, or mobile phone with responsive design.</p>
+                    <h3>Universal Access</h3>
+                    <p>Designed for accessibility, allowing every student to vote regardless of their device or ability.
+                    </p>
                 </div>
             </div>
         </div>
@@ -134,45 +219,45 @@ $election_status = getElectionStatus($pdo);
     <!-- Positions Section -->
     <section id="positions" class="positions-section">
         <div class="container">
-            <h2 class="section-title">Available Positions</h2>
-            <p class="section-subtitle">Vote for candidates in these key student union positions</p>
-            
+            <h2 class="section-title">Election Positions</h2>
             <div class="positions-grid">
                 <?php
                 $positions = getPositionsWithCandidates($pdo);
                 foreach ($positions as $position):
-                ?>
-                <div class="position-card">
-                    <div class="position-header">
-                        <h3><?php echo htmlspecialchars($position['title']); ?></h3>
-                        <p><?php echo $position['candidate_count']; ?> Candidates</p>
-                    </div>
-                    <div class="position-body">
-                        <p><?php echo htmlspecialchars($position['description']); ?></p>
-                        <div class="candidates-preview">
-                            <?php
-                            $candidates = explode(',', $position['candidate_names']);
-                            foreach (array_slice($candidates, 0, 3) as $candidate):
-                                if (!empty(trim($candidate))):
-                            ?>
-                            <span class="candidate-tag"><?php echo htmlspecialchars(trim($candidate)); ?></span>
-                            <?php
-                                endif;
-                            endforeach;
-                            if ($position['candidate_count'] > 3):
-                            ?>
-                            <span class="candidate-tag more">+<?php echo $position['candidate_count'] - 3; ?> more</span>
+                    ?>
+                    <div class="position-card">
+                        <div class="position-header">
+                            <h3><?php echo htmlspecialchars($position['title']); ?></h3>
+                            <p><?php echo $position['candidate_count']; ?> Candidates contesting</p>
+                        </div>
+                        <div class="position-body">
+                            <p style="font-size: 0.9rem; line-height: 1.5;">
+                                <?php echo htmlspecialchars($position['description']); ?></p>
+                            <div class="candidates-preview">
+                                <?php
+                                $candidates = explode(',', $position['candidate_names']);
+                                foreach (array_slice($candidates, 0, 3) as $candidate):
+                                    if (!empty(trim($candidate))):
+                                        ?>
+                                        <span class="candidate-tag"><?php echo htmlspecialchars(trim($candidate)); ?></span>
+                                        <?php
+                                    endif;
+                                endforeach;
+                                if ($position['candidate_count'] > 3):
+                                    ?>
+                                    <span class="candidate-tag more">+<?php echo $position['candidate_count'] - 3; ?>
+                                        others</span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="position-footer">
+                            <?php if ($election_status['status'] == 'active'): ?>
+                                <a href="vote.php" class="btn-vote">Pick Your Leader</a>
+                            <?php else: ?>
+                                <div class="btn-vote disabled">Election <?php echo ucfirst($election_status['status']); ?></div>
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div class="position-footer">
-                        <?php if ($election_status['status'] == 'active'): ?>
-                            <a href="vote.php" class="btn-vote">Vote Now</a>
-                        <?php else: ?>
-                            <button class="btn-vote disabled" disabled>Voting <?php echo $election_status['status']; ?></button>
-                        <?php endif; ?>
-                    </div>
-                </div>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -181,27 +266,31 @@ $election_status = getElectionStatus($pdo);
     <!-- Election Timeline -->
     <section class="timeline-section">
         <div class="container">
-            <h2 class="section-title">Election Timeline</h2>
+            <h2 class="section-title">Road to Leadership</h2>
             <div class="timeline">
-                <div class="timeline-item <?php echo $election_status['status'] == 'ended' ? 'completed' : ''; ?>">
-                    <div class="timeline-date">Feb 15-28, 2024</div>
+                <div class="timeline-progress" style="width: <?php echo $election_status['status'] == 'active' ? '50%' : ($election_status['status'] == 'ended' ? '100%' : '15%'); ?>"></div>
+                <div class="timeline-item completed">
+                    <div class="step-icon"><i class="fas fa-file-signature"></i></div>
                     <div class="timeline-content">
-                        <h3>Candidate Registration</h3>
-                        <p>Potential candidates submit their nominations</p>
+                        <span class="step-label">Phase 1</span>
+                        <h3>Nominations Open</h3>
+                        <p>Candidates submit their vision and manifesto for the student union.</p>
                     </div>
                 </div>
-                <div class="timeline-item <?php echo $election_status['status'] == 'ended' ? 'completed' : ($election_status['status'] == 'active' ? 'current' : ''); ?>">
-                    <div class="timeline-date">Mar 1-10, 2024</div>
+                <div class="timeline-item <?php echo $election_status['status'] == 'active' ? 'current' : ($election_status['status'] == 'ended' ? 'completed' : ''); ?>">
+                    <div class="step-icon"><i class="fas fa-vote-yea"></i></div>
                     <div class="timeline-content">
-                        <h3>Voting Period</h3>
-                        <p>Registered students cast their votes online</p>
+                        <span class="step-label">Phase 2</span>
+                        <h3>Voting Window</h3>
+                        <p>Main election period where all verified students cast their digital ballots.</p>
                     </div>
                 </div>
                 <div class="timeline-item <?php echo $election_status['status'] == 'ended' ? 'current' : ''; ?>">
-                    <div class="timeline-date">Mar 11, 2024</div>
+                    <div class="step-icon"><i class="fas fa-trophy"></i></div>
                     <div class="timeline-content">
-                        <h3>Results Announcement</h3>
-                        <p>Election results declared publicly</p>
+                        <span class="step-label">Phase 3</span>
+                        <h3>Final Declaration</h3>
+                        <p>Public announcement of results and official inauguration of the new union.</p>
                     </div>
                 </div>
             </div>
@@ -213,81 +302,90 @@ $election_status = getElectionStatus($pdo);
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-col">
-                    <div class="logo">
+                    <a href="index.php" class="logo" style="margin-bottom: 2rem;">
                         <i class="fas fa-vote-yea"></i>
-                        <span>StudentVote</span>
-                    </div>
-                    <p>Secure and transparent online voting system for student union elections.</p>
+                        <span style="color: white;">StudentVote</span>
+                    </a>
+                    <p>Pioneering democratic technology for student communities. Built for trust, speed, and
+                        transparency.</p>
                     <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
                     </div>
                 </div>
                 <div class="footer-col">
-                    <h3>Quick Links</h3>
+                    <h3>Resources</h3>
                     <ul>
-                        <li><a href="index.php">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="results_public.php">Results</a></li>
-                        <li><a href="login.php">Login</a></li>
-                        <li><a href="register.php">Register</a></li>
+                        <li><a href="results_public.php">Election Data</a></li>
+                        <li><a href="#">Voting Policy</a></li>
+                        <li><a href="#">How it Works</a></li>
+                        <li><a href="#">FAQs</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h3>Positions</h3>
+                    <h3>Student Union</h3>
                     <ul>
-                        <?php foreach ($positions as $position): ?>
-                        <li><a href="vote.php"><?php echo htmlspecialchars($position['title']); ?></a></li>
-                        <?php endforeach; ?>
+                        <li><a href="#">Union Portal</a></li>
+                        <li><a href="#">Constitution</a></li>
+                        <li><a href="#">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
-                    <h3>Contact Us</h3>
+                    <h3>Support Hub</h3>
                     <ul class="contact-info">
-                        <li><i class="fas fa-envelope"></i> elections@studentunion.edu</li>
-                        <li><i class="fas fa-phone"></i> (123) 456-7890</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Student Union Building, University Campus</li>
+                        <li><i class="fas fa-envelope"></i> help@vote.union.edu</li>
+                        <li><i class="fas fa-phone-alt"></i> +1 (555) 000-VOTE</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Student Hub, Level 2</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Student Union Voting System. All rights reserved.</p>
-                <p>Designed with <i class="fas fa-heart"></i> for transparent student democracy</p>
+                <p>&copy; 2024 Student Union. Developed for transparent democracy.</p>
+                <p>Designed with <i class="fas fa-heart"></i> for students</p>
             </div>
         </div>
     </footer>
 
-    <script src="assets/js/script.js"></script>
     <script>
-        // Mobile menu toggle
-        document.querySelector('.menu-toggle').addEventListener('click', function() {
-            document.querySelector('.nav-links').classList.toggle('active');
+        // Election status countdown and mobile menu
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+
+            menuToggle.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+
+            // Handle scroll navbar effect
+            window.addEventListener('scroll', () => {
+                const navbar = document.querySelector('.navbar');
+                if (window.scrollY > 50) {
+                    navbar.style.padding = '0.5rem 0';
+                    navbar.style.boxShadow = 'var(--shadow-md)';
+                } else {
+                    navbar.style.padding = '1rem 0';
+                    navbar.style.boxShadow = '0 1px 0 0 rgba(0, 0, 0, 0.05)';
+                }
+            });
         });
 
-        // Update election countdown
         <?php if ($election_status['status'] == 'active'): ?>
-        function updateCountdown() {
             const endDate = new Date("<?php echo $election_status['end_date']; ?>").getTime();
-            const now = new Date().getTime();
-            const distance = endDate - now;
-            
-            if (distance < 0) {
-                location.reload();
-                return;
-            }
-            
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            
-            document.querySelector('.status-message').textContent = 
-                `Election ends in ${days}d ${hours}h ${minutes}m ${seconds}s`;
-        }
-        setInterval(updateCountdown, 1000);
+            setInterval(() => {
+                const distance = endDate - new Date().getTime();
+                if (distance < 0) return location.reload();
+
+                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+                const pill = document.querySelector('.status-pill');
+                if (pill) pill.innerHTML = `<i class="fas fa-circle"></i> Running: ${d}d ${h}h ${m}m ${s}s`;
+            }, 1000);
         <?php endif; ?>
     </script>
 </body>
+
 </html>
