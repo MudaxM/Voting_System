@@ -216,6 +216,11 @@ function sendEmail($to, $subject, $message)
         'X-Mailer: PHP/' . phpversion()
     ];
 
+    // Skip email sending on localhost to prevent timeouts
+    if ($_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1') {
+        return true;
+    }
+
     // Send with error suppression during development
     $result = @mail($to, $subject, $message, implode("\r\n", $headers));
 

@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // Set success message and redirect
         $_SESSION['success'] = 'Thank you! Your vote has been submitted successfully.';
-        header('Location: vote_success.php');
+        header('Location: results_public.php');
         exit();
         
     } catch (Exception $e) {

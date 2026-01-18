@@ -437,8 +437,9 @@ if (isLoggedIn()) {
                 <i class="fas fa-vote-yea"></i> StudentVote
             </a>
             <div class="nav-links">
-                <a href="index.php">Home</a>
-                <a href="logout.php" class="btn-outline">Logout</a>
+                <a href="<?php echo SITE_URL; ?>index.php">Home</a>
+                <a href="<?php echo SITE_URL; ?>vote.php">Back to Voting</a>
+                <a href="<?php echo SITE_URL; ?>logout.php" class="btn-outline">Logout</a>
             </div>
         </div>
     </nav>
