@@ -221,16 +221,7 @@ if (isset($_COOKIE['remember_token']) && !isLoggedIn()) {
                     <i class="fas fa-sign-in-alt"></i> Login to Dashboard
                 </button>
 
-                <div class="demo-credentials">
-                    <h4><i class="fas fa-info-circle"></i> Demo Credentials</h4>
-                    <ul>
-                        <li><strong>Admin:</strong> admin@voting.edu / Admin@123</li>
-                        <li><strong>Voter:</strong> voter@university.edu / Voter@123</li>
-                    </ul>
-                    <p style="margin-top: 10px; font-size: 0.85rem; color: var(--gray);">
-                        Note: Demo passwords should be changed in production
-                    </p>
-                </div>
+
 
                 <div class="form-footer">
                     <p>Don't have an account? <a href="register.php" class="form-link">Register here</a></p>

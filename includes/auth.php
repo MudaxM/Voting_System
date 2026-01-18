@@ -30,7 +30,7 @@ function requireLogin()
 {
     if (!isLoggedIn()) {
         $_SESSION['error'] = 'Please login to access this page';
-        header('Location: ../login.php');
+        header('Location: ' . SITE_URL . 'login.php');
         exit();
     }
 }
@@ -43,7 +43,7 @@ function requireAdmin()
     requireLogin();
     if (!isAdmin()) {
         $_SESSION['error'] = 'Access denied. Admin privileges required.';
-        header('Location: ../index.php');
+        header('Location: ' . SITE_URL . 'index.php');
         exit();
     }
 }
@@ -56,7 +56,7 @@ function requireVoter()
     requireLogin();
     if (!isVoter()) {
         $_SESSION['error'] = 'Access denied. Voter privileges required.';
-        header('Location: ../index.php');
+        header('Location: ' . SITE_URL . 'index.php');
         exit();
     }
 }
@@ -68,9 +68,9 @@ function redirectIfLoggedIn()
 {
     if (isLoggedIn()) {
         if (isAdmin()) {
-            header('Location: admin/dashboard.php');
+            header('Location: ' . ADMIN_URL . 'dashboard.php');
         } else {
-            header('Location: vote.php');
+            header('Location: ' . SITE_URL . 'vote.php');
         }
         exit();
     }
