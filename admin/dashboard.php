@@ -378,6 +378,11 @@ $admin = getCurrentUser($pdo);
             color: var(--gray);
         }
 
+        .status-badge.status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
         .election-status-card {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
@@ -577,9 +582,9 @@ $admin = getCurrentUser($pdo);
             <div class="dashboard-card">
                 <h3>Quick Actions</h3>
                 <div class="quick-actions">
-                    <a href="manage_voters.php?action=add" class="quick-action">
-                        <i class="fas fa-user-plus"></i>
-                        <span>Add New Voter</span>
+                    <a href="manage_voters.php" class="quick-action">
+                        <i class="fas fa-users"></i>
+                        <span>Manage Voters</span>
                     </a>
                     <a href="manage_candidates.php?action=add" class="quick-action">
                         <i class="fas fa-user-tie"></i>
@@ -698,14 +703,16 @@ $admin = getCurrentUser($pdo);
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <a href="manage_voters.php?action=edit&id=<?php echo $user['id']; ?>"
-                                                    class="btn-action btn-edit" title="Edit">
-                                                    <i class="fas fa-edit"></i>
+                                                <a href="manage_voters.php"
+                                                    class="btn-action btn-view" title="Manage Voters">
+                                                    <i class="fas fa-users"></i>
                                                 </a>
-                                                <a href="manage_voters.php?action=verify&id=<?php echo $user['id']; ?>"
-                                                    class="btn-action btn-view" title="Verify">
+                                                <?php if (!$user['is_verified']): ?>
+                                                <a href="manage_voters.php?verify=1&id=<?php echo $user['id']; ?>"
+                                                    class="btn-action btn-view" title="Verify" style="background-color: var(--success);">
                                                     <i class="fas fa-check"></i>
                                                 </a>
+                                                <?php endif; ?>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
