@@ -12,9 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form_data = [
         'student_id' => sanitize($_POST['student_id'] ?? ''),
         'full_name' => sanitize($_POST['full_name'] ?? ''),
-        'email' => sanitize($_POST['email'] ?? ''),
-        'password' => $_POST['password'] ?? '',
-        'confirm_password' => $_POST['confirm_password'] ?? '',
+        'email' => strtolower(sanitize($_POST['email'] ?? '')),
+        'password' => trim($_POST['password'] ?? ''),
+        'confirm_password' => trim($_POST['confirm_password'] ?? ''),
         'department' => sanitize($_POST['department'] ?? ''),
         'year' => intval($_POST['year'] ?? 0)
     ];

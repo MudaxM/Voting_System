@@ -557,16 +557,16 @@ $all_candidates = $stmt->fetchAll();
                                     <label class="form-label">Department *</label>
                                     <select name="department" class="form-control form-select" required>
                                         <option value="">Select Department</option>
-                                        <option value="Computer Science" <?php echo ($candidate && $candidate['department'] == 'Computer Science') ? 'selected' : ''; ?>>Computer Science</option>
+                                        <option value="software Engineering" <?php echo ($candidate && $candidate['department'] == 'software engineering') ? 'selected' : ''; ?>>software Engineering</option>
                                         <option value="Electrical Engineering" <?php echo ($candidate && $candidate['department'] == 'Electrical Engineering') ? 'selected' : ''; ?>>Electrical Engineering</option>
                                         <option value="Mechanical Engineering" <?php echo ($candidate && $candidate['department'] == 'Mechanical Engineering') ? 'selected' : ''; ?>>Mechanical Engineering</option>
                                         <option value="Civil Engineering" <?php echo ($candidate && $candidate['department'] == 'Civil Engineering') ? 'selected' : ''; ?>>Civil Engineering</option>
                                         <option value="Information Technology" <?php echo ($candidate && $candidate['department'] == 'Information Technology') ? 'selected' : ''; ?>>Information Technology</option>
-                                        <option value="Business Administration" <?php echo ($candidate && $candidate['department'] == 'Business Administration') ? 'selected' : ''; ?>>Business Administration</option>
-                                        <option value="Medicine" <?php echo ($candidate && $candidate['department'] == 'Medicine') ? 'selected' : ''; ?>>Medicine</option>
-                                        <option value="Law" <?php echo ($candidate && $candidate['department'] == 'Law') ? 'selected' : ''; ?>>Law</option>
-                                        <option value="Arts" <?php echo ($candidate && $candidate['department'] == 'Arts') ? 'selected' : ''; ?>>Arts</option>
-                                        <option value="Science" <?php echo ($candidate && $candidate['department'] == 'Science') ? 'selected' : ''; ?>>Science</option>
+                                        <option value="copmputer science" <?php echo ($candidate && $candidate['department'] == 'copmputer science') ? 'selected' : ''; ?>>copmputer science</option>
+                                        <option value="wateer supply" <?php echo ($candidate && $candidate['department'] == 'wateer supply') ? 'selected' : ''; ?>></option>
+                                        <option value="architectural engineering" <?php echo ($candidate && $candidate['department'] == 'architectural engineering') ? 'selected' : ''; ?>>architectural engineering</option>
+                                        <option value="hydrology and metrology" <?php echo ($candidate && $candidate['department'] == 'hydrology and metrology') ? 'selected' : ''; ?>>hydrology and metrology</option>
+                                        <option value="Servie" <?php echo ($candidate && $candidate['department'] == 'Servie') ? 'selected' : ''; ?>>Servie</option>
                                     </select>
                                 </div>
                                 

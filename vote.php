@@ -409,15 +409,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                            required>
                                     <div class="checkmark"></div>
                                     
-                                    <?php if (!empty($candidate['photo']) && $candidate['photo'] !== 'default.jpg'): ?>
-                                    <img src="uploads/candidates/<?php echo htmlspecialchars($candidate['photo']); ?>" 
-                                         alt="<?php echo htmlspecialchars($candidate['full_name']); ?>"
-                                         class="candidate-photo">
-                                    <?php else: ?>
-                                    <div class="candidate-photo" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
-                                        <?php echo strtoupper(substr($candidate['full_name'], 0, 1)); ?>
+                                    <?php 
+                                    $photo_filename = !empty($candidate['photo']) ? htmlspecialchars($candidate['photo']) : 'default.jpg';
+                                    if ($photo_filename === 'default.jpg') {
+                                        $photo_path = SITE_URL . 'Assets/images/default.jpg';
+                                    } else {
+                                        $photo_path = SITE_URL . 'uploads/candidates/' . $photo_filename;
+                                    }
+                                    ?>
+                                    
+                                    <div class="candidate-photo-wrapper" style="width: 100px; height: 100px; margin-right: 15px;">
+                                        <img src="<?php echo $photo_path; ?>" 
+                                             alt="<?php echo htmlspecialchars($candidate['full_name']); ?>"
+                                             class="candidate-photo"
+                                             style="width: 100%; height: 100%; object-fit: contain; background: white; border-radius: 50%; border: 2px solid #ddd;"
+                                             onerror="this.onerror=null;this.src='Assets/images/default.jpg';">
                                     </div>
-                                    <?php endif; ?>
                                     
                                     <div class="candidate-details">
                                         <div class="candidate-name">
@@ -452,7 +459,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endforeach; ?>
                 
                 <!-- Summary Step -->
-                <div class="voting-step" id="stepSummary">
+                <div class="voting-step" id="step<?php echo count($positions) + 1; ?>">
                     <div class="confirmation-step">
                         <div class="confirmation-icon">
                             <i class="fas fa-check"></i>
@@ -476,7 +483,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <!-- Submission Step -->
-                <div class="voting-step" id="stepSubmit">
+                <div class="voting-step" id="step<?php echo count($positions) + 2; ?>">
                     <div class="confirmation-step">
                         <div class="confirmation-icon" style="background: linear-gradient(135deg, var(--warning), #f59e0b);">
                             <i class="fas fa-exclamation"></i>
@@ -573,7 +580,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script>
         // Initialize variables
-        const totalSteps = <?php echo count($positions) + 2; ?>;
+        const positionsData = <?php echo json_encode($positions); ?>;
+        const totalSteps = positionsData.length + 2;
         let currentStep = 1;
         const votes = {};
         
@@ -596,7 +604,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Update navigation buttons
             document.getElementById('prevBtn').style.display = step === 1 ? 'none' : 'inline-flex';
-            document.getElementById('nextBtn').style.display = step >= totalSteps - 1 ? 'none' : 'inline-flex';
+            document.getElementById('nextBtn').style.display = step === totalSteps ? 'none' : 'inline-flex';
             document.getElementById('submitBtn').style.display = step === totalSteps ? 'inline-flex' : 'none';
             
             // Update step indicator
@@ -622,9 +630,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Next step
         function nextStep() {
             // Validate current step
-            if (currentStep <= <?php echo count($positions); ?>) {
-                const positionId = <?php echo $positions[$currentStep - 1]['id']; ?>;
-                const selectedCandidate = document.querySelector(`input[name="votes[${positionId}]"]:checked`);
+            if (currentStep <= positionsData.length) {
+                const positionId = positionsData[currentStep - 1].id;
+                const selector = `input[name="votes[${positionId}]"]:checked`;
+                const selectedCandidate = document.querySelector(selector);
                 
                 if (!selectedCandidate) {
                     alert('Please select a candidate for this position before proceeding.');
@@ -723,24 +732,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         updateCountdown();
         
         // Candidate selection
-        document.querySelectorAll('.candidate-option').forEach(option => {
-            option.addEventListener('click', function(e) {
-                if (e.target.type === 'radio' || e.target.type === 'checkbox') return;
+        // Candidate selection - Use change event for better reliability
+        document.querySelectorAll('input[type="radio"].candidate-radio').forEach(radio => {
+            radio.addEventListener('change', function(e) {
+                // Get the position ID
+                const positionId = this.getAttribute('data-position');
+                const nameAttribute = this.getAttribute('name');
                 
-                const radio = this.querySelector('input[type="radio"]');
-                if (radio) {
-                    radio.checked = true;
-                    
-                    // Update visual selection
-                    document.querySelectorAll('.candidate-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
-                    this.classList.add('selected');
-                    
-                    // Store vote
-                    const positionId = radio.getAttribute('data-position');
-                    votes[positionId] = radio.value;
-                }
+                // Remove selected class from all options in this position
+                document.querySelectorAll(`input[name="${nameAttribute}"]`).forEach(otherRadio => {
+                    const option = otherRadio.closest('.candidate-option');
+                    if (option) option.classList.remove('selected');
+                });
+                
+                // Add selected class to chosen option
+                const selectedOption = this.closest('.candidate-option');
+                if (selectedOption) selectedOption.classList.add('selected');
+                
+                // Store vote
+                votes[positionId] = this.value;
             });
         });
         

@@ -16,8 +16,8 @@ define('DB_CHARSET', 'utf8mb4');
 
 // Website configuration
 define('SITE_NAME', 'Student Union Voting System');
-define('SITE_URL', 'http://localhost/voting-system/');
-define('ADMIN_URL', 'http://localhost/voting-system/admin/');
+define('SITE_URL', 'http://localhost/voting_system/');
+define('ADMIN_URL', 'http://localhost/voting_system/admin/');
 
 // Security configuration
 define('PEPPER', 'your-secret-pepper-string-here');
