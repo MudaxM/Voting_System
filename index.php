@@ -1,6 +1,19 @@
 <?php
 require_once 'includes/config.php';
 $election_status = getElectionStatus($pdo);
+
+$stats = [];
+// Total candidates
+$sql = "SELECT COUNT(*) as count FROM candidates WHERE is_active = 1";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$stats['total_candidates'] = $stmt->fetch()['count'];
+
+// Total registered voters
+$sql = "SELECT COUNT(*) as count FROM users WHERE is_admin = 0";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$stats['total_voters'] = $stmt->fetch()['count'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,6 +28,11 @@ $election_status = getElectionStatus($pdo);
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap"
         rel="stylesheet">
     <style>
+        .hero-title {
+            margin-top: 1.5rem;
+            color: #3a0ca3;
+        }
+
         .status-pill {
             display: inline-flex;
             align-items: center;
@@ -101,9 +119,9 @@ $election_status = getElectionStatus($pdo);
                 <span>StudentVote</span>
             </a>
             <div class="nav-links">
-                <a href="index.php" class="active">Home</a>
-                <a href="#about">About</a>
-                <a href="results_public.php">Live Results</a>
+                <a href="index.php" class="active btn-login">Home</a>
+                <a href="#about" class="btn-login">About</a>
+                <a href="results_public.php" class="btn-login">Live Results</a>
                 <a href="login.php" class="btn-login">Sign In</a>
                 <a href="register.php" class="btn-register">Register</a>
             </div>
@@ -121,7 +139,7 @@ $election_status = getElectionStatus($pdo);
                     <i class="fas fa-circle"></i>
                     <?php echo ucfirst($election_status['status']); ?> Election
                 </div>
-                <h1 style="color: white;">Empowering the Next Generation of Student Leaders</h1>
+                <h1 class="hero-title">Empowering the Next Generation of Student Leaders</h1>
                 <p class="subtitle">Secure, transparent, and accessible voting system. Make your voice heard and shape
                     the future of our student community today.</p>
 
@@ -144,14 +162,14 @@ $election_status = getElectionStatus($pdo);
                     <div class="stat-item">
                         <i class="fas fa-users"></i>
                         <div>
-                            <h3>1,500+</h3>
+                            <h3><?php echo number_format($stats['total_voters']); ?></h3>
                             <p>Voters</p>
                         </div>
                     </div>
                     <div class="stat-item">
                         <i class="fas fa-user-tie"></i>
                         <div>
-                            <h3>24</h3>
+                            <h3><?php echo number_format($stats['total_candidates']); ?></h3>
                             <p>Candidates</p>
                         </div>
                     </div>
@@ -341,7 +359,7 @@ $election_status = getElectionStatus($pdo);
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Student Union. Developed for transparent democracy.</p>
+                <p>&copy; <?php echo date('Y'); ?> Student Union. Developed for transparent democracy.</p>
                 <p>Designed with <i class="fas fa-heart"></i> for students</p>
             </div>
         </div>

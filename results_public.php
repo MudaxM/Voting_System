@@ -446,7 +446,7 @@ if (isLoggedIn()) {
     <!-- Hero Section -->
     <div class="results-hero">
         <div class="container">
-            <h1 class="hero-title">Election Results 2024</h1>
+            <h1 class="hero-title">Election Results 2026</h1>
             <p class="hero-subtitle">Live real-time updates from the Student Union Election</p>
 
             <div class="status-badge">
