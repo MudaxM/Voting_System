@@ -1,54 +1,59 @@
 <?php
 require_once '../includes/config.php';
+require_once '../includes/auth.php'; // ensure loginUser() and helpers are available
+
 redirectIfLoggedIn();
 
 // Admin-specific login
+$error = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = sanitize($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $error = '';
-    
-    // Check brute force
+    // Normalize and sanitize inputs consistent with login.php
+    $email = strtolower(sanitize($_POST['email'] ?? ''));
+    $password = trim($_POST['password'] ?? '');
+
+    // Brute-force / rate-limit check (loginUser will also check but we can pre-check)
     if (checkBruteForce($pdo, $email)) {
         $error = 'Too many failed login attempts. Please try again in 15 minutes.';
     } else {
-        // Check if user exists and is admin
-        $sql = "SELECT * FROM users WHERE email = ? AND is_admin = 1";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-        
-        if ($user && verifyPassword($password, $user['password'])) {
-            // Check if verified
-            if (!$user['is_verified']) {
-                $error = 'Admin account not verified.';
-            } else {
-                // Successful login
-                addLoginAttempt($pdo, $email, true);
-                
-                // Set admin session
+        // Reuse centralized loginUser() which returns ['success' => bool, 'message' => string]
+        $result = loginUser($pdo, $email, $password);
+
+        if ($result['success']) {
+            // Ensure the account is an admin
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+
+            if ($user && $user['is_admin']) {
+                // Set admin session (consistent with other code)
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['user_role'] = 'admin';
                 $_SESSION['student_id'] = $user['student_id'];
                 $_SESSION['full_name'] = $user['full_name'];
                 $_SESSION['email'] = $user['email'];
                 $_SESSION['is_admin'] = true;
-                
+
                 // Update last login
                 $sql = "UPDATE users SET last_login = NOW() WHERE id = ?";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute([$user['id']]);
-                
-                // Log admin login
-                logActivity($pdo, $user['id'], 'admin_login', 'Admin logged in');
-                
+
+                // Log admin login if helper exists
+                if (function_exists('logActivity')) {
+                    logActivity($pdo, $user['id'], 'admin_login', 'Admin logged in');
+                }
+
                 // Redirect to admin dashboard
                 header('Location: dashboard.php');
                 exit();
+            } else {
+                // Authenticated but not an admin
+                $error = 'You are not authorized to access the admin panel.';
             }
         } else {
-            addLoginAttempt($pdo, $email, false);
-            $error = 'Invalid admin credentials.';
+            // Propagate the message from loginUser (e.g. invalid credentials, not verified, etc.)
+            $error = $result['message'] ?? 'Invalid admin credentials.';
         }
     }
 }
@@ -59,84 +64,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - Student Union Voting System</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../Assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg: #f4f6f8;
+            --card: #fff;
+            --primary: #2563eb;
+            --gray: #6b7280;
+            --gray-light: #e6e9ee;
+            --radius: 8px;
+            --transition: 0.15s ease;
+        }
+        body {
+            background: var(--bg);
+            font-family: Arial, Helvetica, sans-serif;
+        }
         .admin-login-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 20px;
+            padding: 2rem;
         }
         .admin-login-box {
-            background: white;
-            padding: 3rem;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 450px;
-            position: relative;
-            overflow: hidden;
-        }
-        .admin-login-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 420px;
+            background: var(--card);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
         }
         .admin-header {
             text-align: center;
-            margin-bottom: 2rem;
-        }
-        .admin-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 2rem;
-            color: var(--primary-dark);
-            margin-bottom: 1rem;
-        }
-        .admin-logo i {
-            font-size: 2.5rem;
-        }
-        .admin-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 5px;
-        }
-        .security-notice {
-            background-color: #fef3c7;
-            border: 1px solid #fde68a;
-            border-radius: var(--radius);
-            padding: 1rem;
             margin-bottom: 1.5rem;
-            font-size: 0.9rem;
         }
-        .security-notice i {
-            color: #f59e0b;
-            margin-right: 8px;
-        }
-        .login-hint {
-            text-align: center;
-            margin-top: 1.5rem;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        .back-to-site {
-            text-align: center;
-            margin-top: 2rem;
-        }
+        .admin-header .admin-logo { font-size: 28px; color: var(--primary); }
+        .admin-header h2 { margin: 8px 0 0; }
+        .alert { padding: 12px; border-radius: 6px; margin-bottom: 1rem; display: flex; gap: 12px; align-items: flex-start; }
+        .alert-error { background: #fff4f4; border: 1px solid #fecaca; color: #b91c1c; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 6px; color: var(--gray); font-size: 0.95rem; }
+        .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-light); border-radius: 6px; }
+        .password-toggle { position: absolute; right: 8px; top: 36px; background: transparent; border: none; cursor: pointer; }
+        .btn { background: var(--primary); color: #fff; padding: 10px 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        .login-hint { text-align: center; margin-top: 1.5rem; color: var(--gray); font-size: 0.9rem; }
+        .back-to-site { text-align: center; margin-top: 2rem; }
     </style>
 </head>
 <body>
@@ -211,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                <button type="submit" class="btn" style="width: 100%;">
                     <i class="fas fa-sign-in-alt"></i> Access Admin Panel
                 </button>
             </form>
@@ -234,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const togglePassword = document.getElementById('togglePassword');
         const password = document.getElementById('password');
         
-        togglePassword.addEventListener('click', function() {
+togglePassword.addEventListener('click', function() {
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
             this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
@@ -253,25 +225,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 alert('Please enter both email and password.');
                 return false;
             }
-            
-            return true;
-        });
-        
-        // Detect and block screen capture attempts
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey && e.shiftKey && e.key === 'S') || 
-                (e.ctrlKey && e.key === 'PrintScreen')) {
-                alert('Screenshots are disabled in the admin panel for security reasons.');
+
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
                 e.preventDefault();
+                alert('Please enter a valid email address!');
                 return false;
             }
-        });
-        
-        // Disable right-click context menu
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            alert('Right-click is disabled in the admin panel.');
-            return false;
+
+            return true;
         });
     </script>
 </body>
