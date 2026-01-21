@@ -19,6 +19,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Reuse centralized loginUser() which returns ['success' => bool, 'message' => string]
         $result = loginUser($pdo, $email, $password);
 
+        // Debug logging to help determine why login fails (no passwords logged)
+        error_log('[admin-login] email=' . $email . ' result=' . json_encode($result));
+        $stmtDbg = $pdo->prepare("SELECT id, email, is_admin, is_verified FROM users WHERE email = ? LIMIT 1");
+        $stmtDbg->execute([$email]);
+        $dbUser = $stmtDbg->fetch();
+        error_log('[admin-login] dbUser=' . json_encode($dbUser));
+
         if ($result['success']) {
             // Ensure the account is an admin
             $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
